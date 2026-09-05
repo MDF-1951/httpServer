@@ -1,11 +1,11 @@
 import java.util.*;
-public class httpObj{
+public class HttpRequest{
 
     String method;
     String path;
     String version;
 
-    Map<String,String> headers;
+    Map<String,String> headers = new HashMap<>();
 
     public void setMethod(String method)
     {
@@ -19,10 +19,10 @@ public class httpObj{
     {
         this.path=path;
     }
-    public void setHeaders(Map<String,String> map)
+    /*public void setHeaders(Map<String,String> map)
     {
         this.headers=map;
-    }
+    }*/
 
     public String getMethod()
     {

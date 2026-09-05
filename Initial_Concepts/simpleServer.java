@@ -13,7 +13,7 @@ class simpleServer{
 
         Socket socket = ss.accept();
 
-        System.out.println("Clinet Connected");
+        System.out.println("Client Connected");
 
         InputStream input = socket.getInputStream();
 

@@ -3,28 +3,32 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.*;
-public class httpParser{
+public class HttpParser{
 
 
 
-    public static void main(String args[]) throws Exception
+    public HttpRequest parse(BufferedReader reader) throws IOException
     {
-        ServerSocket ss = new ServerSocket(8080);
+        
 
-        System.out.println("Waiting for Connection");
-
-        Socket socket = ss.accept();
-
-        System.out.println("Client Connected");
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         String line = reader.readLine();
 
+        /*if(line == null || line.isEmpty())
+        {
+            throw new IOException("Invalid Http Request");
+        }*/
+
         String parts[] = line.split(" ");
 
-        httpObj obj = new httpObj();
+        /*if(parts.length!=3)
+        {
+            throw new IOException("Invalid Http Request Line");
+        }*/
+
+        HttpRequest obj = new HttpRequest();
 
         obj.setMethod(parts[0]);
         obj.setPath(parts[1]);
@@ -34,7 +38,6 @@ public class httpParser{
         System.out.println(obj.getPath());
         System.out.println(obj.getVersion());
 
-        Map<String,String> map = new HashMap<>();
 
         while(true)
         {
@@ -45,10 +48,10 @@ public class httpParser{
             
             String[] partss = line.split(":",2);
 
-            map.put(partss[0],partss[1]);
+            obj.getHeaders().put(partss[0],partss[1]);
         }
 
-        obj.setHeaders(map);
+        //obj.setHeaders(map);
 
         Map<String,String> gmap = obj.getHeaders();
 
@@ -57,6 +60,8 @@ public class httpParser{
             System.out.print(entry.getKey()+"-");
             System.out.println(entry.getValue());
         }
+
+        return obj;
 
     }
 
