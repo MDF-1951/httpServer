@@ -53,13 +53,14 @@ public class HttpParser{
 
         //obj.setHeaders(map);
 
-        Map<String,String> gmap = obj.getHeaders();
+        /*Map<String,String> gmap = obj.getHeaders();
 
         for(Map.Entry<String,String> entry : gmap.entrySet())
         {
             System.out.print(entry.getKey()+"-");
             System.out.println(entry.getValue());
         }
+        */
 
         return obj;
 

@@ -2,6 +2,8 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HttpServer{
 
@@ -9,10 +11,43 @@ public class HttpServer{
     private final int port;
     private final Router router;
 
+    private final ExecutorService executor = Executors.newFixedThreadPool(4);
+
     public HttpServer(int port,Router router)
     {
         this.port = port;
         this.router=router;
+    }
+
+    public void handleClient(Socket s) throws Exception
+    {
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                    s.getInputStream()));
+            
+        HttpParser parser = new HttpParser();
+            
+        HttpRequest req = parser.parse(reader);
+
+        HttpResponse res = new HttpResponse(s.getOutputStream());
+
+        Handler handler = router.getPath(req.getMethod(),req.getPath());
+
+        if(handler==null)
+        {
+            res.setStatus(404,"Not Found");
+
+            res.setHeaders("Content-Type","text/plain; charset=UTF-8");
+
+            res.send("404 - Resource Not Found");
+        }
+        else
+        {
+            handler.handle(req,res);
+        }
+
+        s.close();
+
     }
     
     public void start() throws Exception
@@ -28,32 +63,16 @@ public class HttpServer{
             Socket s = ss.accept();
             System.out.println("Client "+i+" Connected");
 
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                    s.getInputStream()));
-            
-            HttpParser parser = new HttpParser();
-            
-            HttpRequest req = parser.parse(reader);
+            executor.submit(() -> {
 
-            HttpResponse res = new HttpResponse(s.getOutputStream());
+                try{
+                    handleClient(s);
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            });
 
-            Handler handler = router.getPath(req.getMethod(),req.getPath());
 
-            if(handler==null)
-            {
-                res.setStatus(404,"Not Found");
-
-                res.setHeaders("Content-Type","text/plain; charset=UTF-8");
-
-                res.send("404 - Resource Not Found");
-            }
-            else
-            {
-                handler.handle(req,res);
-            }
-
-            s.close();
 
             i++;
         }
