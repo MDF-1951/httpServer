@@ -4,7 +4,9 @@ public class HttpRequest{
     String method;
     String path;
     String version;
-
+    String body;
+    
+    
     Map<String,String> headers = new HashMap<>();
 
     public void setMethod(String method)
@@ -43,4 +45,12 @@ public class HttpRequest{
     {
         return headers;
     }
+	public String getBody() {
+		return body;
+	}
+	public void setBody(String body) {
+		this.body = body;
+	}
+    
+    
 }

@@ -21,13 +21,19 @@ public class HttpServer{
 
     public void handleClient(Socket s) throws Exception
     {
-        BufferedReader reader = new BufferedReader(
+        /*BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                     s.getInputStream()));
+        */
+    	
+    	System.out.println(
+                "Handling client on thread: "
+                + Thread.currentThread().getName()
+        );
             
         HttpParser parser = new HttpParser();
             
-        HttpRequest req = parser.parse(reader);
+        HttpRequest req = parser.parse(s.getInputStream());
 
         HttpResponse res = new HttpResponse(s.getOutputStream());
 
@@ -65,11 +71,22 @@ public class HttpServer{
 
             executor.submit(() -> {
 
-                try{
-                    handleClient(s);
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
+            	try {
+
+            	    handleClient(s);
+
+            	} catch (IOException e) {
+
+            	    System.out.println(
+            	            "Client connection ended or request was invalid: "
+            	                    + e.getMessage()
+            	    );
+
+            	} catch (Exception e) {
+
+            	    e.printStackTrace();
+
+            	}
             });
 
 

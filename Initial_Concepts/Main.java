@@ -10,7 +10,8 @@ public class Main{
         router.addPath("GET","/",new HomeHandler());
 
         router.addPath("GET","/users",new UserHandler());
-
+        
+        router.addPath("POST", "/users", new UserHandler());
         HttpServer server = new HttpServer(port,router);
 
         server.start();
